@@ -66,12 +66,14 @@ class PostController extends Controller
     {
         $data = $request->validated();
 
+        if(auth()->user()->posts()->whereId($post->id)->get()->isEmpty()) abort(403, 'Unauthorized action');
+
         $post->title = $data['title'];
         $post->content = $data['content'];
         
         if(request()->has('image')) {
             if($post->image) {
-                $image_path = storage_path('app/public/images/').$post->image;  // Value is not URL but directory file path
+                $image_path = storage_path('app/public/images/').$post->image;
                 if(file_exists($image_path)) {
                     unlink($image_path);
                 }
@@ -95,11 +97,15 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
+        if(auth()->user()->posts()->whereId($post->id)->get()->isEmpty()) abort(403, 'Unauthorized action');
+
         return $post->delete();
     }
 
     public function tooglePublish(Post $post)
     {
+        if(auth()->user()->posts()->whereId($post->id)->get()->isEmpty()) abort(403, 'Unauthorized action');
+        
         $post->is_published = !$post->is_published;
 
         return $post->update();

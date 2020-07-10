@@ -46,6 +46,8 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
+        if(auth()->user()->posts()->whereId($post->id)->get()->isEmpty()) return redirect()->route('home');
+
         return view('posts.edit', compact('post'));
     }
 }
